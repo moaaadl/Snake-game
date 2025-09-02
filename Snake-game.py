@@ -1,0 +1,104 @@
+import tkinter as tk
+
+
+# constants 
+GAME_HIGHT = 600
+GAME_WIDTH = 600
+GAME_BGCOLOR = 'black'
+SNAKE_COLOR = 'green'
+FOOD_COLOR = 'red'
+SPACE_SIZE = 20
+direction = 'down'
+score = 0
+
+wn = tk.Tk() # window
+wn.title('snake game') # title
+
+wn.resizable(False, False) # for not change the width and height
+
+# label for info of game
+label = tk.Label(
+    wn, 
+    text=f"Score: {score}",     
+    font=("Arial", 25),  
+    fg="black",          
+)
+label.pack(pady=10)
+
+# the body of the game
+canvas = tk.Canvas(wn, height=GAME_HIGHT, width=GAME_WIDTH,bg=GAME_BGCOLOR)
+canvas.pack()
+
+x, y = [100, 100]
+head = canvas.create_rectangle(x, y, x+SPACE_SIZE, y+SPACE_SIZE, fill=SNAKE_COLOR)
+
+def move_snake():
+    dx = 0
+    dy = 0
+    if direction == 'right':
+        dx = 20
+        dy = 0
+    elif direction == 'left':
+        dx = -20
+        dy = 0
+    elif direction == 'up':
+        dx = 0
+        dy = -20
+    elif direction == 'down':
+        dx = 0
+        dy = +20
+
+    corrdinates = canvas.coords((head))
+    print(corrdinates)
+
+    # the problem is here !
+    if corrdinates[2] >= GAME_WIDTH:
+        canvas.coords(head, 0, corrdinates[1], SPACE_SIZE, corrdinates[3])
+    elif corrdinates[0] <= 0:
+        canvas.coords(head, GAME_WIDTH-SPACE_SIZE, corrdinates[1], GAME_WIDTH, corrdinates[3])
+    elif corrdinates[1] >= GAME_HIGHT:
+        canvas.coords(head, corrdinates[0], 0, corrdinates[2], SPACE_SIZE)
+    elif corrdinates[3] <= 0:
+        canvas.coords(head, corrdinates[0], GAME_HIGHT, corrdinates[2], GAME_HIGHT-SPACE_SIZE)
+
+
+    canvas.move(head, dx, dy)
+    canvas.after(230, move_snake)
+
+
+# this for the key direction 
+wn.bind("<Left>", lambda event: change_direction("left"))
+wn.bind("<Right>", lambda event: change_direction("right"))
+wn.bind("<Up>", lambda event: change_direction("up"))
+wn.bind("<Down>", lambda event: change_direction("down"))
+
+
+def change_direction(new_direction):
+    global direction
+    if direction == 'left':
+        if new_direction != 'right':
+            direction = new_direction
+    elif direction == 'right':
+        if new_direction != 'left':
+            direction = new_direction
+    elif direction == 'up':
+        if new_direction != 'down':
+            direction = new_direction
+    elif direction == 'down':
+        if new_direction != 'up':
+            direction = new_direction
+
+
+# now i need if the snake go on the border of window
+# back from the other way and in the same other cordonates.
+
+
+
+
+food = [canvas.create_oval(20, 20, 20+SPACE_SIZE, 20+SPACE_SIZE, fill=FOOD_COLOR)]
+move_snake()
+
+# end the game.
+wn.bind('<q>', lambda event: wn.quit())
+
+wn.mainloop()
