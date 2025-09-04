@@ -1,7 +1,6 @@
 import tkinter as tk
 import random
 
-
 # constants 
 GAME_HIGHT = 600
 GAME_WIDTH = 600
@@ -18,13 +17,15 @@ wn.title('snake game') # title
 wn.resizable(False, False) # for not change the width and height
 
 # label for info of game
-label = tk.Label(
-    wn, 
-    text=f"Score: {score}",     
-    font=("Arial", 25),  
-    fg="black",          
-)
-label.pack(pady=10)
+
+frame = tk.Frame(wn)
+frame.pack(pady=10)
+
+label_text = tk.Label(frame, text="Score: ", font=("Arial", 25), fg="black")
+label_text.pack(side="left")
+
+label_score = tk.Label(frame, text=score, font=("Arial", 25), fg="black")
+label_score.pack(side="left")
 
 # the body of the game
 canvas = tk.Canvas(wn, height=GAME_HIGHT, width=GAME_WIDTH,bg=GAME_BGCOLOR)
@@ -62,6 +63,16 @@ def move_snake():
         canvas.coords(head, corrdinates[0], -SPACE_SIZE, corrdinates[2], 0)
     elif corrdinates[3] <= 0: # down
         canvas.coords(head, corrdinates[0], GAME_HIGHT+SPACE_SIZE, corrdinates[2], GAME_HIGHT)
+    
+    # eat food 
+    global score 
+    food_cordinates = canvas.coords(food)
+    if corrdinates == food_cordinates:
+        x, y = generate_food(head)
+        canvas.coords(food, x, y, x+SPACE_SIZE, y+SPACE_SIZE)
+        score += 1
+        label_score.config(text="+1", fg="green")
+        wn.after(500, lambda: label_score.config(text=score, fg="black"))
 
 
     canvas.move(head, dx, dy)
@@ -98,7 +109,7 @@ def generate_food(snake):
         x_food = random.randint(0, (GAME_WIDTH // SPACE_SIZE) -1) * SPACE_SIZE
         y_food = random.randint(0, (GAME_HIGHT // SPACE_SIZE) -1) * SPACE_SIZE
         
-        if x_food or y_food not in snake:
+        if [x_food, y_food] != snake:
             return x_food, y_food
 
 
