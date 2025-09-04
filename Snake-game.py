@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 
 # constants 
@@ -48,7 +49,7 @@ def move_snake():
         dx = 0
         dy = +20
 
-    corrdinates = canvas.coords((head))
+    corrdinates = canvas.coords(head)
     
     # for x
     if corrdinates[2] > GAME_WIDTH: # right
@@ -90,13 +91,20 @@ def change_direction(new_direction):
             direction = new_direction
 
 
-# now i need if the snake go on the border of window
-# back from the other way and in the same other cordonates.
+snake_cordinate = canvas.coords(head)
+
+def generate_food(snake):
+    while True:
+        x_food = random.randint(0, (GAME_WIDTH // SPACE_SIZE) -1) * SPACE_SIZE
+        y_food = random.randint(0, (GAME_HIGHT // SPACE_SIZE) -1) * SPACE_SIZE
+        
+        if x_food or y_food not in snake:
+            return x_food, y_food
 
 
+food_x, food_y = generate_food(snake_cordinate)
+food = canvas.create_oval(food_x, food_y, food_x+SPACE_SIZE, food_y+SPACE_SIZE, fill=FOOD_COLOR)
 
-
-food = [canvas.create_oval(20, 20, 20+SPACE_SIZE, 20+SPACE_SIZE, fill=FOOD_COLOR)]
 move_snake()
 
 # end the game.
