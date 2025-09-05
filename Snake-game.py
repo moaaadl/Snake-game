@@ -34,7 +34,15 @@ canvas.pack()
 x, y = [100, 100]
 head = canvas.create_rectangle(x, y, x+SPACE_SIZE, y+SPACE_SIZE, fill=SNAKE_COLOR)
 
-def move_snake():
+snake = [head]
+
+game_over = False
+
+def move_snake(): 
+    global game_over
+    if game_over:
+        return # end game
+
     dx = 0
     dy = 0
     if direction == 'right':
@@ -73,9 +81,21 @@ def move_snake():
         score += 1
         label_score.config(text="+1", fg="green")
         wn.after(500, lambda: label_score.config(text=score, fg="black"))
+        body_snake = canvas.create_rectangle(*corrdinates, fill=SNAKE_COLOR)
+        snake.append(body_snake)
 
+    for i in range(len(snake)-1, 0, -1):
+        canvas.coords(snake[i], *canvas.coords(snake[i-1])) # Move each body part to the position of the part in front of it
 
     canvas.move(head, dx, dy)
+
+    for j in range(1, len(snake)):
+        if canvas.coords(head) == canvas.coords(snake[j]):
+            label_text.config(text="GAME_OVER", fg="red")
+            label_score.config(text="", fg="white")
+            game_over = True
+            return
+
     canvas.after(230, move_snake)
 
 
