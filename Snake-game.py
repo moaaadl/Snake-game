@@ -8,8 +8,9 @@ GAME_BGCOLOR = 'black'
 SNAKE_COLOR = 'green'
 FOOD_COLOR = 'red'
 SPACE_SIZE = 20
-direction = 'down'
+direction = 'right'
 score = 0
+SPEED = 230
 
 wn = tk.Tk() # window
 wn.title('snake game') # title
@@ -38,10 +39,29 @@ snake = [head]
 
 game_over = False
 
+game_paused = False
+
+def pause_game():
+    global game_paused
+    game_paused = not game_paused
+    if game_paused:
+        label_text.config(text="PAUSED", fg="blue")
+        label_score.config(text="", fg="white")
+    else:
+        label_text.config(text=f"Score: ", fg="black")
+        label_score.config(text=score, fg="black")
+        move_snake()
+
+
 def move_snake(): 
     global game_over
+    global game_paused
+    global SPEED
     if game_over:
         return # end game
+    elif game_paused:
+        return
+    
 
     dx = 0
     dy = 0
@@ -84,6 +104,10 @@ def move_snake():
         body_snake = canvas.create_rectangle(*corrdinates, fill=SNAKE_COLOR)
         snake.append(body_snake)
 
+
+        if score % 5 == 0 and SPEED > 50:  
+            SPEED -= 20  
+
     for i in range(len(snake)-1, 0, -1):
         canvas.coords(snake[i], *canvas.coords(snake[i-1])) # Move each body part to the position of the part in front of it
 
@@ -95,8 +119,9 @@ def move_snake():
             label_score.config(text="", fg="white")
             game_over = True
             return
+    
 
-    canvas.after(230, move_snake)
+    canvas.after(SPEED, move_snake)
 
 
 # this for the key direction 
@@ -138,6 +163,44 @@ food = canvas.create_oval(food_x, food_y, food_x+SPACE_SIZE, food_y+SPACE_SIZE, 
 
 move_snake()
 
+
+# were here ---
+
+
+def reset_game():
+    GAME_HIGHT = 600
+    GAME_WIDTH = 600
+    GAME_BGCOLOR = 'black'
+    SNAKE_COLOR = 'green'
+    FOOD_COLOR = 'red'
+    SPACE_SIZE = 20
+    direction = 'right'
+    score = 0
+    SPEED = 230
+    x, y = [100, 100]
+
+def restart_game():
+    reset_game()
+    for s in snake:
+        canvas.delete(s)
+    canvas.delete(head, food)
+    SPEED = 230
+    direction = "right"
+    score = 0
+
+    new_head = canvas.create_rectangle(x, y, x+SPACE_SIZE, y+SPACE_SIZE, fill=SNAKE_COLOR)
+    move_snake()
+
+# -----
+
+
+    
+
+
+wn.bind("<space>", lambda event: restart_game())
+
+# pause the game.
+wn.bind("<p>", lambda event: pause_game())
 # end the game.
 wn.bind('<q>', lambda event: wn.quit())
 
