@@ -1,6 +1,6 @@
 # Snake Game
 
-A classic **Snake game** built using **Python Tkinter**. Eat the food, grow your snake, and avoid colliding with yourself!  
+A classic **Snake game** built using **Python Tkinter and Pygame**. Eat the food, grow your snake, and avoid colliding with yourself!  
 
 ## Features
 
